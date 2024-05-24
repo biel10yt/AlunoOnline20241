@@ -44,7 +44,7 @@ public class ProfessorService {
     }
 
     public void deleteById(Long id){
-        professorRepository.deleteById(id);
+        professorRepository.deleteById(id );
     }
 
 
