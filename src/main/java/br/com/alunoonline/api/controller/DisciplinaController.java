@@ -23,11 +23,21 @@ public class DisciplinaController {
         disciplinaService.create(disciplina);
     }
 
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Disciplina> findAll() {
+        return disciplinaService.findAll();
+    }
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Optional<Disciplina> findById(@PathVariable Long id) {
         return disciplinaService.findById(id);
     }
 
-
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody Disciplina disciplina, @PathVariable Long id) {
+        disciplinaService.update(id, disciplina);
+    }
 }
