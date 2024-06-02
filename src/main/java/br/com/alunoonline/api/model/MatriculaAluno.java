@@ -18,9 +18,9 @@ public class MatriculaAluno implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double nota1;
+    private Double nota1;
 
-    private double nota2;
+    private Double nota2;
 
     @ManyToOne
     @JoinColumn(name = "aluno_id")

@@ -4,7 +4,6 @@ import br.com.alunoonline.api.dtos.AtualizarNotasRequest;
 import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;
 import br.com.alunoonline.api.model.MatriculaAluno;
 import br.com.alunoonline.api.repository.MatriculaAlunoRepository;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,17 +15,21 @@ public class MatriculaAlunoService {
     public static final double GRADE_AVG_TO_APPROVE = 7.0;
 
     @Autowired
-    MatriculaAlunoRepository matriculaalunoRepository;
+    MatriculaAlunoRepository matriculaAlunoRepository;
 
-    public void create(MatriculaAluno matriculaaluno) {
-        matriculaaluno.setStatus(MatriculaAlunoStatusEnum.MATRICULADO);
-        matriculaalunoRepository.save(matriculaaluno);
+    public void create(MatriculaAluno matriculaAluno) {
+        matriculaAluno.setStatus(MatriculaAlunoStatusEnum.MATRICULADO);
+        matriculaAlunoRepository.save(matriculaAluno);
     }
 
     public void updateGrades(Long matriculaAlunoId, AtualizarNotasRequest atualizarNotasRequest) {
-        MatriculaAluno matriculaAluno = matriculaalunoRepository.findById(matriculaAlunoId)
+        MatriculaAluno matriculaAluno = matriculaAlunoRepository.findById(matriculaAlunoId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Matricula não encontrou"));
+        updateStudentGrades(matriculaAluno, atualizarNotasRequest);
+        updateStudentStatus(matriculaAluno);
+
+        matriculaAlunoRepository.save(matriculaAluno);
     }
 
 
@@ -47,8 +50,27 @@ public class MatriculaAlunoService {
         if (nota1 != null  && nota2 != null){
             double average = (nota1 + nota2) /2;
             matriculaAluno.setStatus(average >= GRADE_AVG_TO_APPROVE ? MatriculaAlunoStatusEnum.APROVADO : MatriculaAlunoStatusEnum.REPROVADO);
-
         }
+
+
     }
 
+    public void updateStatusToBreak(Long matriculaAlunoId) {
+        MatriculaAluno matriculaAluno =
+                matriculaAlunoRepository.findById(matriculaAlunoId)
+                        .orElseThrow(() ->
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Matricula não encontrou"));
+
+        if (!MatriculaAlunoStatusEnum.MATRICULADO.equals(matriculaAluno.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Só é possivel trancar uma matricula com o status MATRICULADO");
+        }
+        changeStatus(matriculaAluno, MatriculaAlunoStatusEnum.TRANCADO);
+    }
+
+
+    public void changeStatus(MatriculaAluno matriculaAluno, MatriculaAlunoStatusEnum matriculaAlunoStatusEnum) {
+        matriculaAluno.setStatus(matriculaAlunoStatusEnum);
+        matriculaAlunoRepository.save(matriculaAluno);
+
+    }
 }

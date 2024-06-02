@@ -1,6 +1,7 @@
 package br.com.alunoonline.api.controller;
 
 
+import br.com.alunoonline.api.dtos.AtualizarNotasRequest;
 import br.com.alunoonline.api.model.MatriculaAluno;
 import br.com.alunoonline.api.service.MatriculaAlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,26 @@ import org.springframework.web.bind.annotation.*;
 public class MatriculaAlunoController {
 
     @Autowired
-    MatriculaAlunoService matriculaalunoService;
+    MatriculaAlunoService matriculaAlunoService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-
-    public void create(@RequestBody MatriculaAluno matriculaaluno){
-         matriculaalunoService.create(matriculaaluno);
+    public void create(@RequestBody MatriculaAluno matriculaAluno) {
+        matriculaAlunoService.create(matriculaAluno);
     }
 
+    @PatchMapping("/update-grades/{matriculaAlunoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateGrades(@RequestBody AtualizarNotasRequest atualizarNotasRequest,
+                             @PathVariable Long matriculaAlunoId) {
+        matriculaAlunoService.updateGrades(matriculaAlunoId, atualizarNotasRequest);
+    }
 
+    @PatchMapping("/update-status-to-break/{matriculaAlunoId}")
+    @ResponseStatus
+    public void updateStatusToBreak(@PathVariable Long matriculaAlunoId) {
+        matriculaAlunoService.updateStatusToBreak(matriculaAlunoId);
+    }
 
 }
 
