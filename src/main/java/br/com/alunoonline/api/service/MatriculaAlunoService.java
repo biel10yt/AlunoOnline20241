@@ -1,6 +1,7 @@
 package br.com.alunoonline.api.service;
 
 import br.com.alunoonline.api.dtos.AtualizarNotasRequest;
+import br.com.alunoonline.api.dtos.HistoricoAlunoResponse;
 import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;
 import br.com.alunoonline.api.model.MatriculaAluno;
 import br.com.alunoonline.api.repository.MatriculaAlunoRepository;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class MatriculaAlunoService {
@@ -34,21 +37,21 @@ public class MatriculaAlunoService {
 
 
     public void updateStudentGrades(MatriculaAluno matriculaAluno, AtualizarNotasRequest atualizarNotasRequest) {
-        if (atualizarNotasRequest.getNota1() != null) {
-            matriculaAluno.setNota1(atualizarNotasRequest.getNota1());
+        if (atualizarNotasRequest.getGrade1() != null) {
+            matriculaAluno.setGrade1(atualizarNotasRequest.getGrade1());
         }
 
-        if (atualizarNotasRequest.getNota2() != null) {
-            matriculaAluno.setNota2(atualizarNotasRequest.getNota2());
+        if (atualizarNotasRequest.getGrade2() != null) {
+            matriculaAluno.setGrade2(atualizarNotasRequest.getGrade2());
         }
     }
 
     public void updateStudentStatus(MatriculaAluno matriculaAluno) {
-        Double nota1 = matriculaAluno.getNota1();
-        Double nota2 = matriculaAluno.getNota2();
+        Double nota1 = matriculaAluno.getGrade1();
+        Double nota2 = matriculaAluno.getGrade2();
 
-        if (nota1 != null  && nota2 != null){
-            double average = (nota1 + nota2) /2;
+        if (nota1 != null && nota2 != null) {
+            double average = (nota1 + nota2) / 2;
             matriculaAluno.setStatus(average >= GRADE_AVG_TO_APPROVE ? MatriculaAlunoStatusEnum.APROVADO : MatriculaAlunoStatusEnum.REPROVADO);
         }
 
@@ -71,6 +74,11 @@ public class MatriculaAlunoService {
     public void changeStatus(MatriculaAluno matriculaAluno, MatriculaAlunoStatusEnum matriculaAlunoStatusEnum) {
         matriculaAluno.setStatus(matriculaAlunoStatusEnum);
         matriculaAlunoRepository.save(matriculaAluno);
+
+    }
+
+    public HistoricoAlunoResponse getHistoricFromStudent(Long alunoId) {
+        List<MatriculaAluno> matriculasDoAluno = matriculaAlunoRepository.findByStudentId(alunoId);
 
     }
 }
