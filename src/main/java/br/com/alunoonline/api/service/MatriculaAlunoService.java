@@ -28,15 +28,15 @@ public class MatriculaAlunoService {
     }
 
     public void updateGrades(Long matriculaAlunoId, AtualizarNotasRequest atualizarNotasRequest) {
-        MatriculaAluno matriculaAluno = matriculaAlunoRepository.findById(matriculaAlunoId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Matricula não encontrou"));
+        MatriculaAluno matriculaAluno =
+                matriculaAlunoRepository.findById(matriculaAlunoId)
+                        .orElseThrow(() ->
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Matrícula não encontrada"));
         updateStudentGrades(matriculaAluno, atualizarNotasRequest);
         updateStudentStatus(matriculaAluno);
 
         matriculaAlunoRepository.save(matriculaAluno);
     }
-
 
     public void updateStudentGrades(MatriculaAluno matriculaAluno, AtualizarNotasRequest atualizarNotasRequest) {
         if (atualizarNotasRequest.getGrade1() != null) {
@@ -57,33 +57,31 @@ public class MatriculaAlunoService {
             matriculaAluno.setStatus(average >= GRADE_AVG_TO_APPROVE ? MatriculaAlunoStatusEnum.APROVADO : MatriculaAlunoStatusEnum.REPROVADO);
         }
 
-
     }
 
     public void updateStatusToBreak(Long matriculaAlunoId) {
         MatriculaAluno matriculaAluno =
                 matriculaAlunoRepository.findById(matriculaAlunoId)
                         .orElseThrow(() ->
-                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Matricula não encontrou"));
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Matrícula não encontrada"));
 
         if (!MatriculaAlunoStatusEnum.MATRICULADO.equals(matriculaAluno.getStatus())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Só é possivel trancar uma matricula com o status MATRICULADO");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Só é possível trancar uma matrícula com o status MATRICULADO");
         }
+
         changeStatus(matriculaAluno, MatriculaAlunoStatusEnum.TRANCADO);
     }
-
 
     public void changeStatus(MatriculaAluno matriculaAluno, MatriculaAlunoStatusEnum matriculaAlunoStatusEnum) {
         matriculaAluno.setStatus(matriculaAlunoStatusEnum);
         matriculaAlunoRepository.save(matriculaAluno);
-
     }
 
-    public HistoricoAlunoResponse getHistoricFromStudent(Long alunoId) {
+    public HistoricoAlunoResponse getAcademicTranscript(Long alunoId) {
         List<MatriculaAluno> matriculasDoAluno = matriculaAlunoRepository.findByStudentId(alunoId);
 
-        if (matriculasDoAluno.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Esse aluno não possui matriculas ");
+        if(matriculasDoAluno.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Esse aluno não possui matrículas");
         }
 
         HistoricoAlunoResponse historico = new HistoricoAlunoResponse();
@@ -92,27 +90,27 @@ public class MatriculaAlunoService {
 
         List<DisciplinasAlunoResponse> disciplinasList = new ArrayList<>();
 
-        for (MatriculaAluno matricula : matriculasDoAluno){
+        for (MatriculaAluno matricula : matriculasDoAluno) {
             DisciplinasAlunoResponse disciplinasAlunoResponse = new DisciplinasAlunoResponse();
             disciplinasAlunoResponse.setSubjectName(matricula.getSubject().getName());
             disciplinasAlunoResponse.setProfessorName(matricula.getSubject().getProfessor().getName());
             disciplinasAlunoResponse.setGrade1(matricula.getGrade1());
             disciplinasAlunoResponse.setGrade2(matricula.getGrade2());
-            disciplinasAlunoResponse.setAverege(matricula.getGrade1() + matricula.getGrade2() / 2);
-//min 49 metodo indepedente
-            if (matricula.getGrade1() != null && matricula.getGrade2() != null) {
-                disciplinasAlunoResponse.setAverege(matricula.getGrade1() + matricula.getGrade2() / 2.0);
+
+            // min 49 aula 10 metodo de media
+            if(matricula.getGrade1() != null && matricula.getGrade2() != null) {
+                disciplinasAlunoResponse.setAverege((matricula.getGrade1() + matricula.getGrade2()) / 2.0);
             } else {
                 disciplinasAlunoResponse.setAverege(null);
             }
 
             disciplinasAlunoResponse.setStatus(matricula.getStatus());
             disciplinasList.add(disciplinasAlunoResponse);
-            }
-
-            historico.setStundentSubjectsReponseList(disciplinasList);
-
-            return historico;
         }
+
+        historico.setStundentSubjectsReponseList(disciplinasList);
+
+        return historico;
+     }
     }
 

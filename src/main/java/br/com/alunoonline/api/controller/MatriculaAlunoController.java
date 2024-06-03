@@ -30,15 +30,15 @@ public class MatriculaAlunoController {
     }
 
     @PatchMapping("/update-status-to-break/{matriculaAlunoId}")
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateStatusToBreak(@PathVariable Long matriculaAlunoId) {
         matriculaAlunoService.updateStatusToBreak(matriculaAlunoId);
     }
 
     @GetMapping("/academic-transcript/{alunoId}")
     @ResponseStatus(HttpStatus.OK)
-    public HistoricoAlunoResponse getAcamedemicTranscript(@PathVariable Long alunoId){
-        return matriculaAlunoService.getHistoricFromStudent(alunoId);
+    public HistoricoAlunoResponse getAcademicTranscript(@PathVariable Long alunoId) {
+        return matriculaAlunoService.getAcademicTranscript(alunoId);
     }
 
 
