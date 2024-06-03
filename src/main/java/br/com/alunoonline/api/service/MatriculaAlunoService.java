@@ -1,6 +1,7 @@
 package br.com.alunoonline.api.service;
 
 import br.com.alunoonline.api.dtos.AtualizarNotasRequest;
+import br.com.alunoonline.api.dtos.DisciplinasAlunoResponse;
 import br.com.alunoonline.api.dtos.HistoricoAlunoResponse;
 import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;
 import br.com.alunoonline.api.model.MatriculaAluno;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -80,5 +82,37 @@ public class MatriculaAlunoService {
     public HistoricoAlunoResponse getHistoricFromStudent(Long alunoId) {
         List<MatriculaAluno> matriculasDoAluno = matriculaAlunoRepository.findByStudentId(alunoId);
 
+        if (matriculasDoAluno.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Esse aluno não possui matriculas ");
+        }
+
+        HistoricoAlunoResponse historico = new HistoricoAlunoResponse();
+        historico.setNameStundent(matriculasDoAluno.get(0).getStudent().getName());
+        historico.setEmailStundent(matriculasDoAluno.get(0).getStudent().getEmail());
+
+        List<DisciplinasAlunoResponse> disciplinasList = new ArrayList<>();
+
+        for (MatriculaAluno matricula : matriculasDoAluno){
+            DisciplinasAlunoResponse disciplinasAlunoResponse = new DisciplinasAlunoResponse();
+            disciplinasAlunoResponse.setSubjectName(matricula.getSubject().getName());
+            disciplinasAlunoResponse.setProfessorName(matricula.getSubject().getProfessor().getName());
+            disciplinasAlunoResponse.setGrade1(matricula.getGrade1());
+            disciplinasAlunoResponse.setGrade2(matricula.getGrade2());
+            disciplinasAlunoResponse.setAverege(matricula.getGrade1() + matricula.getGrade2() / 2);
+//min 49 metodo indepedente
+            if (matricula.getGrade1() != null && matricula.getGrade2() != null) {
+                disciplinasAlunoResponse.setAverege(matricula.getGrade1() + matricula.getGrade2() / 2.0);
+            } else {
+                disciplinasAlunoResponse.setAverege(null);
+            }
+
+            disciplinasAlunoResponse.setStatus(matricula.getStatus());
+            disciplinasList.add(disciplinasAlunoResponse);
+            }
+
+            historico.setStundentSubjectsReponseList(disciplinasList);
+
+            return historico;
+        }
     }
-}
+
