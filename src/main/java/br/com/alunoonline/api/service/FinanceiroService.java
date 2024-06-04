@@ -29,6 +29,7 @@ public class FinanceiroService {
     @Autowired
     FaturaRepository faturaRepository;
 
+    //(cron = "0 * * * * ?")
     @Scheduled(cron = "0 0 0 * * ?")
     public void faturaGeneration() {
         logger.info("Iniciando a geração de faturas...");
