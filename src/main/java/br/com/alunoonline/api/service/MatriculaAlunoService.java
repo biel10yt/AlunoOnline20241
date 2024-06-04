@@ -75,6 +75,7 @@ public class MatriculaAlunoService {
     public void changeStatus(MatriculaAluno matriculaAluno, MatriculaAlunoStatusEnum matriculaAlunoStatusEnum) {
         matriculaAluno.setStatus(matriculaAlunoStatusEnum);
         matriculaAlunoRepository.save(matriculaAluno);
+
     }
 
     public HistoricoAlunoResponse getAcademicTranscript(Long alunoId) {
