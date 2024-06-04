@@ -97,7 +97,6 @@ public class MatriculaAlunoService {
             disciplinasAlunoResponse.setGrade1(matricula.getGrade1());
             disciplinasAlunoResponse.setGrade2(matricula.getGrade2());
 
-            // min 49 aula 10 metodo de media
             if(matricula.getGrade1() != null && matricula.getGrade2() != null) {
                 disciplinasAlunoResponse.setAverege((matricula.getGrade1() + matricula.getGrade2()) / 2.0);
             } else {
@@ -112,5 +111,13 @@ public class MatriculaAlunoService {
 
         return historico;
      }
-    }
+
+     // eu tentei :(
+    public Double calculateAverage(Double grade1, Double grade2) {
+        double average = (grade1 + grade2)/2;
+        return average;
+   }
+}
+
+
 
